@@ -1,7 +1,10 @@
+import { isAxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import ErrorMessage from "../components/ErrorMessage";
 import type { RegisterForm } from "../types";
+import api from "../config/axios";
 
 export default function RegisterView() {
   const initialValues: RegisterForm = {
@@ -16,14 +19,25 @@ export default function RegisterView() {
     register,
     watch,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({ defaultValues: initialValues });
 
   const password = watch("password");
 
-  const handleRegister = (formData: RegisterForm) => {
-    console.log(formData);
+  const handleRegister = async (formData: RegisterForm) => {
+    try {
+      const { data } = await api.post("/auth/register", formData);
+      toast.success(data);
+
+      reset();
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        toast.error(error.response.data.error);
+      }
+    }
   };
+
   return (
     <>
       <h1 className="text-4xl text-white font-bold">Crear cuenta</h1>
@@ -110,7 +124,7 @@ export default function RegisterView() {
             Repetir Password
           </label>
           <input
-            id="password"
+            id="password_confirmation"
             type="password"
             placeholder="Repetir Password"
             className="bg-slate-100 border-none p-3 rounded-lg placeholder-slate-400"

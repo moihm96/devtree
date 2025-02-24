@@ -15,7 +15,11 @@ export const createAccount = async (req: Request, res: Response) => {
   const handle = slug(req.body.handle, { separator: "" });
   const clearHandle = handle.replaceAll("-", "");
 
-  const handleExists = await User.findOne({ clearHandle });
+  const handleExists = await User.findOne({ handle: clearHandle });
+  console.log(handle);
+  console.log(clearHandle);
+  console.log(handleExists);
+
   if (handleExists) {
     const error = new Error("Nombre de usuario no disponible");
     return res.status(409).json({ error: error.message });
