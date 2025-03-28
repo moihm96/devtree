@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import slug from "sluggo";
 import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
+import { generateJWT } from "../utils/jwt";
 
 export const createAccount = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -16,9 +17,6 @@ export const createAccount = async (req: Request, res: Response) => {
   const clearHandle = handle.replaceAll("-", "");
 
   const handleExists = await User.findOne({ handle: clearHandle });
-  console.log(handle);
-  console.log(clearHandle);
-  console.log(handleExists);
 
   if (handleExists) {
     const error = new Error("Nombre de usuario no disponible");
@@ -49,5 +47,7 @@ export const login = async (req: Request, res: Response) => {
     return res.status(401).json({ error: error.message });
   }
 
-  res.send("Autenticado....");
+  const token = generateJWT({ user });
+
+  res.send(token);
 };
