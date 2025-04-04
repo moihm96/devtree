@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import slug from "sluggo";
+import jwt from "jsonwebtoken";
 import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
@@ -50,4 +51,8 @@ export const login = async (req: Request, res: Response) => {
   const token = generateJWT({ user });
 
   res.send(token);
+};
+
+export const getUser = async (req: Request, res: Response) => {
+  res.json(req.user);
 };
